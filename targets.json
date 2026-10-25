@@ -1,0 +1,11 @@
+[
+  {
+    "type": "url",
+    "target": "https://www.google.com"
+    },
+  {
+    "type": "port",
+    "host": "google.com",
+    "port": 443
+  }
+]
