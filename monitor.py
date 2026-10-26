@@ -83,9 +83,9 @@ def run_checks(path):
       "type": "file",
       "ok": False,
       "error": (
-        f"Error parsing {path}",
-        f" at line {error.lineno}, column {error.colno}",
-        f"{error.msg}")
+        f"Error parsing {path}"
+        f" at line {error.lineno}, column {error.colno}"
+        f": {error.msg}")
     }]
 
   except OSError as error:
@@ -167,7 +167,7 @@ def run_checks(path):
 
 if __name__ == "__main__":
  
-  results = run_checks("targets_tests.json")
+  results = run_checks("empty.json")
 
   for result in results:
     print(result)
