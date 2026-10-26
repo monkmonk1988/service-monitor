@@ -63,52 +63,103 @@ def check_port(host, port):
     }
 
 def run_checks(path):
-
   results = []
 
   try:
     with open(path, "r", encoding="utf-8") as file:
       targets = json.load(file)
 
-  except (json.JSONDecodeError, FileNotFoundError) as error:
+  except FileNotFoundError:
     return [{
+      "index": None,
+      "type": "file",
+      "ok": False,
+      "error": f"Error reading {path}"
+    }]
+
+  except json.JSONDecodeError as error:
+    return [{
+      "index": None,
+      "type": "file",
+      "ok": False,
+      "error": (
+        f"Error parsing {path}",
+        f" at line {error.lineno}, column {error.colno}",
+        f"{error.msg}")
+    }]
+
+  except OSError as error:
+    return [{
+      "index": None,
+      "type": "file",
       "ok": False,
       "error": f"Error reading {path}: {type(error).__name__}"
     }]
 
   if not isinstance(targets, list):
     return [{
+      "index": None,
+      "type": "file",
       "ok": False,
       "error": f"Invalid format in {path}: Expected a list of targets."
     }]
 
-  for item in targets:
-    
+
+  for index, item in enumerate(targets):
+    target_type = item.get("type") if isinstance(item, dict) else None
+
     try:
-      
       if not isinstance(item, dict):
         raise ValueError("Each target must be a dictionary.")
 
-      target_type = item.get("type")
-
       if target_type == "url":
-        result = check_url(item["target"])
-      
+        url = item.get("target")
+
+        if not isinstance(url, str) or not url.strip():
+          raise ValueError(
+            "'target' must be a non-empty URL string."
+          )
+
+        result = check_url(url)
+
       elif target_type == "port":
-        result = check_port(item["host"], item["port"])
-      
+        host = item.get("host")
+        port = item.get("port")
+
+        if not isinstance(host, str) or not host.strip():
+          raise ValueError(
+            "'host' must be a non-empty string."
+          )
+
+        if isinstance(port, bool):
+          raise ValueError("'port' must be an integer.")
+
+        try:
+          port = int(port)
+        except (TypeError, ValueError):
+          raise ValueError("'port' must be a valid integer.")
+
+        if not 1 <= port <= 65535:
+          raise ValueError(
+            "'port' must be between 1 and 65535."
+          )
+
+        result = check_port(host, port)
+
       else:
         result = {
           "ok": False,
-          "error": f"Unknown target type: {target_type}"
+          "error": f"Unknown target type: {target_type!r}"
         }
 
-    except(KeyError, TypeError, ValueError) as error:
+    except (KeyError, TypeError, ValueError) as error:
       result = {
         "ok": False,
-        "error": f"Invalid target format: {type(error).__name__}"
+        "error": str(error)
       }
 
+    result["index"] = index
+    result["type"] = target_type
     results.append(result)
 
   return results
@@ -116,7 +167,7 @@ def run_checks(path):
 
 if __name__ == "__main__":
  
-  results = run_checks("gibt-es-nicht.json")
+  results = run_checks("targets_tests.json")
 
   for result in results:
     print(result)

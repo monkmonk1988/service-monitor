@@ -28,5 +28,10 @@
     "type": "port",
     "host": "google.com",
     "port": "8080"
+  },
+  {
+    "type": "port",
+    "host": "google.com",
+    "port": 443
   }
 ]
