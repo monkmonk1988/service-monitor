@@ -73,7 +73,7 @@ def run_checks(path):
   except (json.JSONDecodeError, FileNotFoundError) as error:
     return [{
       "ok": False,
-      "error": f"Error reading {path}: type{error}.__name__"
+      "error": f"Error reading {path}: {type(error).__name__}"
     }]
 
   if not isinstance(targets, list):
@@ -106,7 +106,7 @@ def run_checks(path):
     except(KeyError, TypeError, ValueError) as error:
       result = {
         "ok": False,
-        "error": f"Invalid target format: {error}"
+        "error": f"Invalid target format: {type(error).__name__}"
       }
 
     results.append(result)
@@ -115,30 +115,8 @@ def run_checks(path):
 
 
 if __name__ == "__main__":
-  """
-  test_urls = [
-    "https://www.google.com",
-    "https://diese-domain-existiert-definitiv-nicht-123456789.de",
-    "https://httpbin.org/status/404"
-  ]
-
-  for url in test_urls:
-    result = check_url(url)
-    print(result)
-
-  test_ports = [
-    ("google.com", 443),
-    ("google.com", 81),
-    ("localhost", 9999)
-  ]
-
-  for host, port in test_ports:
-    result = check_port(host, port)
-    print(result)
-
-  alte test versionen
-  """
-  results = run_checks("targets.json")
+ 
+  results = run_checks("gibt-es-nicht.json")
 
   for result in results:
     print(result)

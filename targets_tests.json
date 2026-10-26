@@ -1,0 +1,32 @@
+[
+  {
+    "type": "url",
+    "target": 15
+    },
+  {
+    "type": "port",
+    "host": "",
+    "port": 1
+  },
+  {
+    "type": "ftp",
+    "target": "ftp://example.com"
+  },
+  {
+    "type": "port",
+    "port": 22
+  },
+  
+  425976,
+  
+  {
+    "type": "port",
+    "host": "google.com",
+    "port": "abc"
+  },
+  {
+    "type": "port",
+    "host": "google.com",
+    "port": "8080"
+  }
+]
